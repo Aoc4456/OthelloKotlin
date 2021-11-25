@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OthelloKotlin</string>
+    <string name="cpu_easy">CPU : よわい</string>
 </resources>
