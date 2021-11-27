@@ -27,7 +27,7 @@ class BlackOrWhiteDialog : DialogFragment() {
         return activity?.let { it ->
             val builder = AlertDialog.Builder(it)
             builder.setItems(R.array.black_or_white) { _, index ->
-                when(index){
+                when (index) {
                     0 -> {
                         dialogListener.onClickButtonInDialog(true)
                     }
@@ -39,7 +39,7 @@ class BlackOrWhiteDialog : DialogFragment() {
                     }
                 }
             }
-            builder.create()
+            builder.create().apply { setCanceledOnTouchOutside(false) }
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 }

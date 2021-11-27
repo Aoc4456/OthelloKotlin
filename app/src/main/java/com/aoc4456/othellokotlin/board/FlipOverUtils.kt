@@ -2,12 +2,32 @@ package com.aoc4456.othellokotlin.board
 
 import com.aoc4456.othellokotlin.model.Cell
 import com.aoc4456.othellokotlin.model.Stone
+import com.aoc4456.othellokotlin.model.Turn
 import timber.log.Timber
 
 /**
  * 石をひっくり返せるかどうかの判断に関する関数たち
  */
 object FlipOverUtils {
+
+    /** 次に置ける全てのセルを取得 */
+    fun getAllCellsCanPut(cellList: List<List<Cell>>, turn: Turn): List<Cell> {
+        val color = when (turn) {
+            Turn.BLACK -> Stone.BLACK
+            Turn.WHITE -> Stone.WHITE
+        }
+
+        val canPutCells = mutableListOf<Cell>()
+        cellList.flatten().forEach {
+            if (it.stone == Stone.NONE) {
+                val nextCell = Cell(it.vertical, it.horizontal, color)
+                if (getCellsToFlip(cellList, nextCell).isNotEmpty()) {
+                    canPutCells.add(nextCell)
+                }
+            }
+        }
+        return canPutCells
+    }
 
     /* 引数の場所に置いたとき、ひっくり帰るセルの一覧を取得 **/
     fun getCellsToFlip(cellList: List<List<Cell>>, placed: Cell): List<Cell> {

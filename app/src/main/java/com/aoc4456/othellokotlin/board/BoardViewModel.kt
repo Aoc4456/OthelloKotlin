@@ -19,15 +19,15 @@ class BoardViewModel() : ViewModel() {
     private var playerColor = Turn.BLACK
 
     /** 今プレイヤーの番かどうか */
-    private val isPlayerTurn = nowTurn == playerColor
+    private val isPlayerTurn: Boolean get() = nowTurn == playerColor
 
     /** 盤を更新したいとき */
     private val _updateBoard = PublishLiveData<Boolean>()
     val updateBoard: PublishLiveData<Boolean> = _updateBoard
 
     /** 先行/後攻を決定 */
-    fun decideTheOrder(isBlack:Boolean){
-        playerColor = when(isBlack){
+    fun decideTheOrder(isBlack: Boolean) {
+        playerColor = when (isBlack) {
             true -> Turn.BLACK
             else -> Turn.WHITE
         }
@@ -39,12 +39,28 @@ class BoardViewModel() : ViewModel() {
         initializeBoard()
         _updateBoard.value = true
 
+        playTurn()
     }
 
     /** プレーの繰り返し部分 */
-    private fun playTurn(){
-        if(isPlayerTurn){
+    private fun playTurn() {
+        if (nowTurn == Turn.BLACK) {
+            if (isPlayerTurn) {
+                Timber.d("黒のターンです : プレイヤーの番です")
+            } else {
+                Timber.d("黒のターンです : CPUの番です")
+            }
+        }
+        if (nowTurn == Turn.WHITE) {
+            if (isPlayerTurn) {
+                Timber.d("白のターンです : プレイヤーの番です")
+            } else {
+                Timber.d("白のターンです : CPUの番です")
+            }
+        }
 
+        if (isPlayerTurn) {
+            highLightCellsCanPut()
         }
     }
 
@@ -65,7 +81,14 @@ class BoardViewModel() : ViewModel() {
     }
 
     /** 置ける場所をハイライトする */
-    
+    private fun highLightCellsCanPut() {
+        if (!isPlayerTurn) return
+        val canPutCells = FlipOverUtils.getAllCellsCanPut(cellList, nowTurn)
+        canPutCells.forEach {
+            cellList[it.vertical][it.horizontal].highlight = true
+        }
+        _updateBoard.value = true
+    }
 
     companion object {
         const val BOARD_SIZE = 8
