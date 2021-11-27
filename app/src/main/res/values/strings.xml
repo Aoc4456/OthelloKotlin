@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">OthelloKotlin</string>
     <string name="cpu_easy">CPU : よわい</string>
+
+    <string-array name="black_or_white">
+        <item>黒(先行)</item>
+        <item>白(後攻)</item>
+        <item>ランダム</item>
+    </string-array>
 </resources>
