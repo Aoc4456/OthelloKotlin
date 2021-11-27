@@ -1,5 +1,6 @@
 package com.aoc4456.othellokotlin.board
 
+import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.ViewModel
 import com.aoc4456.othellokotlin.ai.AI
@@ -9,7 +10,6 @@ import com.aoc4456.othellokotlin.model.Stone
 import com.aoc4456.othellokotlin.model.Turn
 import com.aoc4456.othellokotlin.util.PublishLiveData
 import timber.log.Timber
-import java.util.logging.Handler
 
 class BoardViewModel() : ViewModel() {
 
@@ -46,11 +46,11 @@ class BoardViewModel() : ViewModel() {
         initializeBoard()
         _updateBoard.value = true
 
-        playTurn()
+        requestPutStone()
     }
 
-    /** プレーの繰り返し部分 */
-    private fun playTurn() {
+    /** プレイヤー または CPUに、石を置くように要求 */
+    private fun requestPutStone() {
         if (nowTurn == Turn.BLACK) {
             if (isPlayerTurn) {
                 Timber.d("黒のターンです : プレイヤーの番です")
@@ -68,13 +68,28 @@ class BoardViewModel() : ViewModel() {
 
         if (isPlayerTurn) {
             highLightCellsCanPut()
-        }else{
-
+        } else {
+            cpuPutStone()
         }
     }
 
-    fun onClickCell(vertical:Int,horizontal:Int){
-
+    fun onClickCell(vertical: Int, horizontal: Int) {
+        val color = when (nowTurn) {
+            Turn.BLACK -> Stone.BLACK
+            else -> Stone.WHITE
+        }
+        val cell = Cell(vertical, horizontal, color)
+        val flipOverList = FlipOverUtils.getCellsToFlip(cellList, cell)
+        if (flipOverList.isEmpty()) {
+            Timber.d("そこには置けません $cell")
+        } else {
+            resetHighLightCells()
+            cellList[vertical][horizontal] = cell
+            flipOverList.forEach {
+                cellList[it.vertical][it.horizontal] = Cell(it.vertical,it.horizontal,color)
+            }
+            _updateBoard.value = true
+        }
     }
 
     /** 初期配置 */
@@ -103,9 +118,19 @@ class BoardViewModel() : ViewModel() {
         _updateBoard.value = true
     }
 
+    private fun resetHighLightCells() {
+        cellList.forEach { list ->
+            list.forEach { it.highlight = false }
+        }
+    }
+
     /** CPUに石を置かせる */
-    private fun cpuPutStone(){
-        
+    private fun cpuPutStone() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val position = ai.getNextPosition(cellList, nowTurn)
+            onClickCell(position.first, position.second)
+            Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
+        }, 1000)
     }
 }
 
