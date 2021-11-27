@@ -1,11 +1,15 @@
 package com.aoc4456.othellokotlin.board
 
+import android.os.Looper
 import androidx.lifecycle.ViewModel
+import com.aoc4456.othellokotlin.ai.AI
 import com.aoc4456.othellokotlin.model.Cell
+import com.aoc4456.othellokotlin.model.Difficulty
 import com.aoc4456.othellokotlin.model.Stone
 import com.aoc4456.othellokotlin.model.Turn
 import com.aoc4456.othellokotlin.util.PublishLiveData
 import timber.log.Timber
+import java.util.logging.Handler
 
 class BoardViewModel() : ViewModel() {
 
@@ -24,6 +28,9 @@ class BoardViewModel() : ViewModel() {
     /** 盤を更新したいとき */
     private val _updateBoard = PublishLiveData<Boolean>()
     val updateBoard: PublishLiveData<Boolean> = _updateBoard
+
+    /** CPUのAI */
+    private var ai = AI(Difficulty.WEAK)
 
     /** 先行/後攻を決定 */
     fun decideTheOrder(isBlack: Boolean) {
@@ -61,7 +68,13 @@ class BoardViewModel() : ViewModel() {
 
         if (isPlayerTurn) {
             highLightCellsCanPut()
+        }else{
+
         }
+    }
+
+    fun onClickCell(vertical:Int,horizontal:Int){
+
     }
 
     /** 初期配置 */
@@ -88,6 +101,11 @@ class BoardViewModel() : ViewModel() {
             cellList[it.vertical][it.horizontal].highlight = true
         }
         _updateBoard.value = true
+    }
+
+    /** CPUに石を置かせる */
+    private fun cpuPutStone(){
+        
     }
 }
 
