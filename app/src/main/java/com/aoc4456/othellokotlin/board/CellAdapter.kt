@@ -1,5 +1,6 @@
 package com.aoc4456.othellokotlin.board
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,16 +10,17 @@ import com.aoc4456.othellokotlin.model.Cell
 class CellAdapter : ListAdapter<Cell, CellAdapter.ViewHolder>(CellAdapterDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        TODO("Not yet implemented")
+        val cellView = CellView(parent.context)
+        return ViewHolder(cellView)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val cell = getItem(position)
+        val cellView = holder.itemView as CellView
+        cellView.setAppearanceCell(cell)
     }
 
-    class ViewHolder private constructor(parent: ViewGroup) : RecyclerView.ViewHolder(parent) {
-
-    }
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
 
 class CellAdapterDiffCallback : DiffUtil.ItemCallback<Cell>() {
