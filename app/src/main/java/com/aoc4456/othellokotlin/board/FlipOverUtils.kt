@@ -4,6 +4,7 @@ import com.aoc4456.othellokotlin.model.Cell
 import com.aoc4456.othellokotlin.model.Stone
 import com.aoc4456.othellokotlin.model.Turn
 import timber.log.Timber
+import kotlin.math.min
 
 /**
  * 石をひっくり返せるかどうかの判断に関する関数たち
@@ -36,6 +37,13 @@ object FlipOverUtils {
             return emptyList()
         }
         return getFlipCellsUp(cellList, placed)
+            .plus(getFlipCellsUpperRight(cellList, placed))
+            .plus(getFlipCellsRight(cellList, placed))
+            .plus(getFlipCellsBottomRight(cellList, placed))
+            .plus(getFlipCellsBottom(cellList, placed))
+            .plus(getFlipCellsBottomLeft(cellList, placed))
+            .plus(getFlipCellsLeft(cellList, placed))
+            .plus(getFlipCellsUpperLeft(cellList, placed))
     }
 
     /** 置かれた位置から上方向 */
@@ -49,6 +57,23 @@ object FlipOverUtils {
         return getSandwichedStones(upperList)
     }
 
+    /** 右上方向 */
+    private fun getFlipCellsUpperRight(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.vertical == 0) return emptyList()
+        if (placed.horizontal == BOARD_SIZE - 1) return emptyList()
+        val upperRightList = mutableListOf<Cell>()
+        upperRightList.add(placed)
+
+        val distanceVertical = placed.vertical // 上端までの距離
+        val distanceHorizontal = BOARD_SIZE - (placed.horizontal + 1) // 右端までの距離
+        val distanceToEdge = min(distanceVertical, distanceHorizontal)
+
+        for (i in 1..distanceToEdge) { // 置いた場所のひとつ右上から、右上方向に行けるまで
+            upperRightList.add(cellList[placed.vertical - i][placed.horizontal + i])
+        }
+        return getSandwichedStones(upperRightList)
+    }
+
     /** 右方向 */
     private fun getFlipCellsRight(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
         if (placed.horizontal == BOARD_SIZE - 1) return emptyList()
@@ -60,8 +85,25 @@ object FlipOverUtils {
         return getSandwichedStones(rightList)
     }
 
+    /** 右下方向 */
+    private fun getFlipCellsBottomRight(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.vertical == BOARD_SIZE - 1) return emptyList()
+        if (placed.horizontal == BOARD_SIZE - 1) return emptyList()
+        val bottomRightList = mutableListOf<Cell>()
+        bottomRightList.add(placed)
+
+        val distanceVertical = BOARD_SIZE - (placed.vertical + 1) // 下端までの距離
+        val distanceHorizontal = BOARD_SIZE - (placed.horizontal + 1) // 右端までの距離
+        val distanceToEdge = min(distanceVertical, distanceHorizontal)
+
+        for (i in 1..distanceToEdge) { // 置いた場所のひとつ右下から、右下方向に行けるまで
+            bottomRightList.add(cellList[placed.vertical + i][placed.horizontal + i])
+        }
+        return getSandwichedStones(bottomRightList)
+    }
+
     /** 下方向 */
-    private fun getFlipCellsDown(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+    private fun getFlipCellsBottom(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
         if (placed.vertical == BOARD_SIZE - 1) return emptyList()
         val downList = mutableListOf<Cell>()
         downList.add(placed)
@@ -69,6 +111,23 @@ object FlipOverUtils {
             downList.add(cellList[i][placed.horizontal])
         }
         return getSandwichedStones(downList)
+    }
+
+    /** 左下方向 */
+    private fun getFlipCellsBottomLeft(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.vertical == BOARD_SIZE - 1) return emptyList()
+        if (placed.horizontal == 0) return emptyList()
+        val bottomLeftList = mutableListOf<Cell>()
+        bottomLeftList.add(placed)
+
+        val distanceVertical = BOARD_SIZE - (placed.vertical + 1) // 下端までの距離
+        val distanceHorizontal = placed.horizontal // 左端までの距離
+        val distanceToEdge = min(distanceVertical, distanceHorizontal)
+
+        for (i in 1..distanceToEdge) { // 置いた場所のひとつ左下から、左下方向に行けるまで
+            bottomLeftList.add(cellList[placed.vertical + i][placed.horizontal - i])
+        }
+        return getSandwichedStones(bottomLeftList)
     }
 
     /** 左方向 */
@@ -80,6 +139,23 @@ object FlipOverUtils {
             leftList.add(cellList[placed.vertical][i])
         }
         return getSandwichedStones(leftList)
+    }
+
+    /** 左上方向 */
+    private fun getFlipCellsUpperLeft(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.vertical == 0) return emptyList()
+        if (placed.horizontal == 0) return emptyList()
+        val upperLeftList = mutableListOf<Cell>()
+        upperLeftList.add(placed)
+
+        val distanceVertical = placed.vertical // 上端までの距離
+        val distanceHorizontal = placed.horizontal // 左端までの距離
+        val distanceToEdge = min(distanceVertical, distanceHorizontal)
+
+        for (i in 1..distanceToEdge) { // 置いた場所のひとつ左上から、左上方向に行けるまで
+            upperLeftList.add(cellList[placed.vertical - i][placed.horizontal - i])
+        }
+        return getSandwichedStones(upperLeftList)
     }
 
     private fun getSandwichedStones(list: List<Cell>): List<Cell> {

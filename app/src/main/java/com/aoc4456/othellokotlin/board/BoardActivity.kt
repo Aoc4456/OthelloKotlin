@@ -24,7 +24,7 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_board)
 
         binding.recyclerView.let {
-            it.layoutManager = GridLayoutManager(this, BoardViewModel.BOARD_SIZE)
+            it.layoutManager = GridLayoutManager(this, BOARD_SIZE)
             it.adapter = cellAdapter
         }
 
