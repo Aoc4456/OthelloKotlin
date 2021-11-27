@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aoc4456.othellokotlin.model.Cell
-import timber.log.Timber
 
-class CellAdapter : ListAdapter<Cell, CellAdapter.ViewHolder>(CellAdapterDiffCallback()) {
+class CellAdapter(private val viewModel: BoardViewModel) :
+    ListAdapter<Cell, CellAdapter.ViewHolder>(CellAdapterDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val cellView = CellView(parent.context)
@@ -18,8 +18,13 @@ class CellAdapter : ListAdapter<Cell, CellAdapter.ViewHolder>(CellAdapterDiffCal
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val cell = getItem(position)
         val cellView = holder.itemView as CellView
-        Timber.d("セルを更新します $cell")
         cellView.setAppearanceCell(cell)
+
+        cellView.setOnClickListener {
+            if (cell.highlight) {
+                viewModel.onClickCell(cell.vertical, cell.horizontal)
+            }
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

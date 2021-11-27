@@ -46,6 +46,18 @@ class BoardViewModel() : ViewModel() {
         initializeBoard()
         _updateBoard.value = true
 
+        next()
+    }
+
+    private fun next() {
+        // ゲーム自体が続けられるか
+        // false -> ゲーム自体を終了
+
+
+        // このターンのプレイヤーがプレイできるか
+        // false -> nowTurn を変更して続行
+
+
         requestPutStone()
     }
 
@@ -82,13 +94,20 @@ class BoardViewModel() : ViewModel() {
         val flipOverList = FlipOverUtils.getCellsToFlip(cellList, cell)
         if (flipOverList.isEmpty()) {
             Timber.d("そこには置けません $cell")
+            return
         } else {
             resetHighLightCells()
             cellList[vertical][horizontal] = cell
             flipOverList.forEach {
-                cellList[it.vertical][it.horizontal] = Cell(it.vertical,it.horizontal,color)
+                cellList[it.vertical][it.horizontal] = Cell(it.vertical, it.horizontal, color)
             }
             _updateBoard.value = true
+
+            nowTurn = when (nowTurn) {
+                Turn.BLACK -> Turn.WHITE
+                else -> Turn.BLACK
+            }
+            next()
         }
     }
 
@@ -113,14 +132,20 @@ class BoardViewModel() : ViewModel() {
         if (!isPlayerTurn) return
         val canPutCells = FlipOverUtils.getAllCellsCanPut(cellList, nowTurn)
         canPutCells.forEach {
-            cellList[it.vertical][it.horizontal].highlight = true
+            cellList[it.vertical][it.horizontal] =
+                Cell(it.vertical, it.horizontal, Stone.NONE, true)
         }
         _updateBoard.value = true
     }
 
     private fun resetHighLightCells() {
         cellList.forEach { list ->
-            list.forEach { it.highlight = false }
+            list.forEach {
+                if (it.highlight) {
+                    cellList[it.vertical][it.horizontal] =
+                        Cell(it.vertical, it.horizontal, it.stone, false)
+                }
+            }
         }
     }
 
@@ -128,9 +153,9 @@ class BoardViewModel() : ViewModel() {
     private fun cpuPutStone() {
         Handler(Looper.getMainLooper()).postDelayed({
             val position = ai.getNextPosition(cellList, nowTurn)
-            onClickCell(position.first, position.second)
             Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
-        }, 1000)
+            onClickCell(position.first, position.second)
+        }, 100)
     }
 }
 

@@ -14,14 +14,14 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
 
     private val viewModel: BoardViewModel by viewModels()
     private lateinit var binding: ActivityBoardBinding
-
-    private val cellAdapter = CellAdapter()
+    private lateinit var cellAdapter : CellAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_board)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_board)
+        cellAdapter = CellAdapter(viewModel)
 
         binding.recyclerView.let {
             it.layoutManager = GridLayoutManager(this, BOARD_SIZE)
