@@ -35,11 +35,11 @@ object FlipOverUtils {
             Timber.d("既に石が置いてあります : ${placed.vertical} / ${placed.vertical}")
             return emptyList()
         }
-        return getFlipCellUp(cellList, placed)
+        return getFlipCellsUp(cellList, placed)
     }
 
     /** 置かれた位置から上方向 */
-    private fun getFlipCellUp(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+    private fun getFlipCellsUp(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
         if (placed.vertical == 0) return emptyList()
         val upperList = mutableListOf<Cell>()
         upperList.add(placed)
@@ -47,6 +47,39 @@ object FlipOverUtils {
             upperList.add(cellList[i][placed.horizontal])
         }
         return getSandwichedStones(upperList)
+    }
+
+    /** 右方向 */
+    private fun getFlipCellsRight(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.horizontal == BOARD_SIZE - 1) return emptyList()
+        val rightList = mutableListOf<Cell>()
+        rightList.add(placed)
+        for (i in (placed.horizontal + 1) until BOARD_SIZE) { // 置いた場所のひとつ右から盤の一番右まで
+            rightList.add(cellList[placed.vertical][i])
+        }
+        return getSandwichedStones(rightList)
+    }
+
+    /** 下方向 */
+    private fun getFlipCellsDown(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.vertical == BOARD_SIZE - 1) return emptyList()
+        val downList = mutableListOf<Cell>()
+        downList.add(placed)
+        for (i in (placed.vertical + 1) until BOARD_SIZE) { // 置いた場所のひとつ下から盤の一番下まで
+            downList.add(cellList[i][placed.horizontal])
+        }
+        return getSandwichedStones(downList)
+    }
+
+    /** 左方向 */
+    private fun getFlipCellsLeft(cellList: List<List<Cell>>, placed: Cell): List<Cell> {
+        if (placed.horizontal == 0) return emptyList()
+        val leftList = mutableListOf<Cell>()
+        leftList.add(placed)
+        for (i in (placed.horizontal - 1) downTo 0) { // 置いた場所のひとつ左から盤の一番左まで
+            leftList.add(cellList[placed.vertical][i])
+        }
+        return getSandwichedStones(leftList)
     }
 
     private fun getSandwichedStones(list: List<Cell>): List<Cell> {

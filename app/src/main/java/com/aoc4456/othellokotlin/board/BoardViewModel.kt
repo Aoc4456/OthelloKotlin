@@ -89,8 +89,6 @@ class BoardViewModel() : ViewModel() {
         }
         _updateBoard.value = true
     }
-
-    companion object {
-        const val BOARD_SIZE = 8
-    }
 }
+
+const val BOARD_SIZE = 8
