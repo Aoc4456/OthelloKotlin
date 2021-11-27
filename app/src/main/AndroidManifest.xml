@@ -3,6 +3,7 @@
     package="com.aoc4456.othellokotlin">
 
     <application
+        android:name=".OthelloApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
