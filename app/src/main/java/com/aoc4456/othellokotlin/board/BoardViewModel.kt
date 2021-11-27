@@ -5,6 +5,7 @@ import com.aoc4456.othellokotlin.model.Cell
 import com.aoc4456.othellokotlin.model.Stone
 import com.aoc4456.othellokotlin.model.Turn
 import com.aoc4456.othellokotlin.util.PublishLiveData
+import timber.log.Timber
 
 class BoardViewModel() : ViewModel() {
 
@@ -14,13 +15,19 @@ class BoardViewModel() : ViewModel() {
     /** 今どちらの番か */
     private var nowTurn = Turn.BLACK
 
+    /** プレイヤーの色 */
+    private var playerColor = Turn.BLACK
+
+    /** 今プレイヤーの番かどうか */
+    private val isPlayerTurn: Boolean get() = nowTurn == playerColor
+
     /** 盤を更新したいとき */
     private val _updateBoard = PublishLiveData<Boolean>()
     val updateBoard: PublishLiveData<Boolean> = _updateBoard
 
     /** 先行/後攻を決定 */
-    fun decideTheOrder(isBlack:Boolean){
-        nowTurn = when(isBlack){
+    fun decideTheOrder(isBlack: Boolean) {
+        playerColor = when (isBlack) {
             true -> Turn.BLACK
             else -> Turn.WHITE
         }
@@ -31,6 +38,30 @@ class BoardViewModel() : ViewModel() {
     fun gameStart() {
         initializeBoard()
         _updateBoard.value = true
+
+        playTurn()
+    }
+
+    /** プレーの繰り返し部分 */
+    private fun playTurn() {
+        if (nowTurn == Turn.BLACK) {
+            if (isPlayerTurn) {
+                Timber.d("黒のターンです : プレイヤーの番です")
+            } else {
+                Timber.d("黒のターンです : CPUの番です")
+            }
+        }
+        if (nowTurn == Turn.WHITE) {
+            if (isPlayerTurn) {
+                Timber.d("白のターンです : プレイヤーの番です")
+            } else {
+                Timber.d("白のターンです : CPUの番です")
+            }
+        }
+
+        if (isPlayerTurn) {
+            highLightCellsCanPut()
+        }
     }
 
     /** 初期配置 */
@@ -49,7 +80,15 @@ class BoardViewModel() : ViewModel() {
         cellList[upperLeftPosition][upperLeftPosition + 1].stone = Stone.BLACK
     }
 
-    companion object {
-        const val BOARD_SIZE = 8
+    /** 置ける場所をハイライトする */
+    private fun highLightCellsCanPut() {
+        if (!isPlayerTurn) return
+        val canPutCells = FlipOverUtils.getAllCellsCanPut(cellList, nowTurn)
+        canPutCells.forEach {
+            cellList[it.vertical][it.horizontal].highlight = true
+        }
+        _updateBoard.value = true
     }
 }
+
+const val BOARD_SIZE = 8
