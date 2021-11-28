@@ -7,7 +7,7 @@ import com.aoc4456.othellokotlin.model.Turn
 
 class AI(private val difficulty: Difficulty) {
 
-    /** CPUが石を置く */
+    /** CPUが次に置くポジションを得る */
     fun getNextPosition(
         cellList: List<List<Cell>>,
         turn: Turn

@@ -2,6 +2,8 @@ package com.aoc4456.othellokotlin.board
 
 import android.os.Handler
 import android.os.Looper
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.aoc4456.othellokotlin.ai.AI
 import com.aoc4456.othellokotlin.model.Cell
@@ -35,14 +37,20 @@ class BoardViewModel() : ViewModel() {
     /** 入力を受け付けるか */
     private var clickable = false
 
+    /** 表示するメッセージ */
+    private val _turnMessage = MutableLiveData("")
+    val turnMessage: LiveData<String> = _turnMessage
+
     /** 黒のターンで置く場所があるか */
-    private fun isCanPlayBlack(): Boolean = FlipOverUtils.getAllCellsCanPut(cellList, Turn.BLACK).isNotEmpty()
+    private fun isCanPlayBlack(): Boolean =
+        FlipOverUtils.getAllCellsCanPut(cellList, Turn.BLACK).isNotEmpty()
 
     /** 白のターンで置く場所があるか */
-    private fun isCanPlayWhite(): Boolean = FlipOverUtils.getAllCellsCanPut(cellList, Turn.WHITE).isNotEmpty()
+    private fun isCanPlayWhite(): Boolean =
+        FlipOverUtils.getAllCellsCanPut(cellList, Turn.WHITE).isNotEmpty()
 
     /** ゲームを続けられるか */
-    private fun isCanContinueGame() : Boolean = isCanPlayBlack() || isCanPlayWhite()
+    private fun isCanContinueGame(): Boolean = isCanPlayBlack() || isCanPlayWhite()
 
     /** 先行/後攻を決定 */
     fun decideTheOrder(isBlack: Boolean) {
@@ -54,57 +62,39 @@ class BoardViewModel() : ViewModel() {
     }
 
     /** ゲーム開始 */
-    fun gameStart() {
+    private fun gameStart() {
         initializeBoard()
         _updateBoard.value = true
 
         next()
     }
 
+    @Synchronized
     private fun next() {
-        // ゲーム自体が続けられるか
-        if(!isCanContinueGame()){
-            Timber.d("置ける場所がなくなったので、ゲームを終了します")
-            Timber.d("黒 : ${cellList.flatten().filter { it.stone == Stone.BLACK }.size}")
-            Timber.d("白 : ${cellList.flatten().filter { it.stone == Stone.WHITE }.size}")
-
-            return
-        }
-
-        // このターンのプレイヤーがプレイできるか
-        if(nowTurn == Turn.BLACK && !isCanPlayBlack()){
-            Timber.d("黒の置ける場所がありません　パスします")
+        if (!isCanContinueGame()) {
+            val blackNumber = "黒 ${cellList.flatten().filter { it.stone == Stone.BLACK }.size}"
+            val whiteNumber = "白 ${cellList.flatten().filter { it.stone == Stone.WHITE }.size}"
+            _turnMessage.value = "ゲームが終了しました $blackNumber / $whiteNumber"
+        } else if (nowTurn == Turn.BLACK && !isCanPlayBlack()) {
+            _turnMessage.value = "黒の置ける場所がありません　パスします"
             nowTurn = Turn.WHITE
-            next()
-            return
-        }
-
-        if(nowTurn == Turn.WHITE && !isCanPlayWhite()){
-            Timber.d("白の置ける場所がありません　パスします")
+            Handler(Looper.getMainLooper()).postDelayed({
+                next()
+            },1500)
+        } else if (nowTurn == Turn.WHITE && !isCanPlayWhite()) {
+            _turnMessage.value = "白の置ける場所がありません　パスします"
             nowTurn = Turn.BLACK
-            next()
-            return
+            Handler(Looper.getMainLooper()).postDelayed({
+                next()
+            },1500)
+        } else {
+            requestPutStone()
         }
-
-        requestPutStone()
     }
 
     /** プレイヤー または CPUに、石を置くように要求 */
     private fun requestPutStone() {
-        if (nowTurn == Turn.BLACK) {
-            if (isPlayerTurn) {
-                Timber.d("黒のターンです : プレイヤーの番です")
-            } else {
-                Timber.d("黒のターンです : CPUの番です")
-            }
-        }
-        if (nowTurn == Turn.WHITE) {
-            if (isPlayerTurn) {
-                Timber.d("白のターンです : プレイヤーの番です")
-            } else {
-                Timber.d("白のターンです : CPUの番です")
-            }
-        }
+        _turnMessage.value = getTurnMessage(isPlayerTurn, nowTurn)
 
         if (isPlayerTurn) {
             clickable = true
@@ -170,3 +160,24 @@ class BoardViewModel() : ViewModel() {
 }
 
 const val BOARD_SIZE = 8
+
+/* 現在の状況を示すメッセージ **/
+private fun getTurnMessage(isPlayerTurn: Boolean, nowTurn: Turn): String {
+    var message = ""
+    message += if (isPlayerTurn) {
+        "プレイヤーの番です"
+    } else {
+        "CPUの番です"
+    }
+
+    message += when (nowTurn) {
+        Turn.BLACK -> {
+            " : 黒"
+        }
+        Turn.WHITE -> {
+            " : 白"
+        }
+    }
+
+    return message
+}
