@@ -32,6 +32,9 @@ class BoardViewModel() : ViewModel() {
     /** CPUのAI */
     private var ai = AI(Difficulty.WEAK)
 
+    /** 入力を受け付けるか */
+    private var clickable = false
+
     /** 先行/後攻を決定 */
     fun decideTheOrder(isBlack: Boolean) {
         playerColor = when (isBlack) {
@@ -79,8 +82,9 @@ class BoardViewModel() : ViewModel() {
         }
 
         if (isPlayerTurn) {
-            highLightCellsCanPut()
+            clickable = true
         } else {
+            clickable = false
             cpuPutStone()
         }
     }
@@ -96,6 +100,7 @@ class BoardViewModel() : ViewModel() {
             Timber.d("そこには置けません $cell")
             return
         } else {
+            clickable = false
             cellList[vertical][horizontal] = cell
             _updateBoard.value = true
 
@@ -129,24 +134,13 @@ class BoardViewModel() : ViewModel() {
         cellList[upperLeftPosition][upperLeftPosition + 1].stone = Stone.BLACK
     }
 
-    /** 置ける場所をハイライトする */
-    private fun highLightCellsCanPut() {
-        if (!isPlayerTurn) return
-        val canPutCells = FlipOverUtils.getAllCellsCanPut(cellList, nowTurn)
-        canPutCells.forEach {
-            cellList[it.vertical][it.horizontal] =
-                Cell(it.vertical, it.horizontal, Stone.NONE)
-        }
-        _updateBoard.value = true
-    }
-
     /** CPUに石を置かせる */
     private fun cpuPutStone() {
         Handler(Looper.getMainLooper()).postDelayed({
             val position = ai.getNextPosition(cellList, nowTurn)
             Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
             onClickCell(position.first, position.second)
-        }, 1000)
+        }, 1750)
     }
 }
 
