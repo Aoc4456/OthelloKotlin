@@ -1,7 +1,6 @@
 package com.aoc4456.othellokotlin.board
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +13,7 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
 
     private val viewModel: BoardViewModel by viewModels()
     private lateinit var binding: ActivityBoardBinding
-    private lateinit var cellAdapter : CellAdapter
+    private lateinit var cellAdapter: CellAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,11 +27,19 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
             it.adapter = cellAdapter
         }
 
-        viewModel.turnMessage.observe(this){
+        viewModel.turnMessage.observe(this) {
             binding.message.text = it
         }
 
-        viewModel.updateBoard.observe(this){
+        viewModel.isProgressVisible.observe(this) {
+            binding.progressBar.visibility = if (it) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
+
+        viewModel.updateBoard.observe(this) {
             updateBoard()
         }
 

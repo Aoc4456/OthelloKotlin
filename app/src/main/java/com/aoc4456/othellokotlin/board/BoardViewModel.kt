@@ -37,6 +37,10 @@ class BoardViewModel() : ViewModel() {
     /** 入力を受け付けるか */
     private var clickable = false
 
+    /** ProgressBarを表示するか */
+    private val _isProgressVisible = MutableLiveData(false)
+    val isProgressVisible: LiveData<Boolean> = _isProgressVisible
+
     /** 表示するメッセージ */
     private val _turnMessage = MutableLiveData("")
     val turnMessage: LiveData<String> = _turnMessage
@@ -151,11 +155,13 @@ class BoardViewModel() : ViewModel() {
 
     /** CPUに石を置かせる */
     private fun cpuPutStone() {
+        _isProgressVisible.value = true
         Handler(Looper.getMainLooper()).postDelayed({
             val position = ai.getNextPosition(cellList, nowTurn)
             Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
+            _isProgressVisible.value = false
             onClickCell(position.first, position.second)
-        }, 1500)
+        }, 1000)
     }
 }
 
@@ -164,19 +170,14 @@ const val BOARD_SIZE = 8
 /* 現在の状況を示すメッセージ **/
 private fun getTurnMessage(isPlayerTurn: Boolean, nowTurn: Turn): String {
     var message = ""
-    message += if (isPlayerTurn) {
-        "プレイヤーの番です"
-    } else {
-        "CPUの番です"
+    val color = when (nowTurn) {
+        Turn.BLACK -> "黒"
+        else -> "白"
     }
-
-    message += when (nowTurn) {
-        Turn.BLACK -> {
-            " : 黒"
-        }
-        Turn.WHITE -> {
-            " : 白"
-        }
+    message += if (isPlayerTurn) {
+        "プレイヤーの番です : $color"
+    } else {
+        "CPUが思考中・・・"
     }
 
     return message
