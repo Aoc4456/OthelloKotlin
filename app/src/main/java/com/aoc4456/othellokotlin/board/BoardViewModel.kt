@@ -69,7 +69,6 @@ class BoardViewModel() : ViewModel() {
         next()
     }
 
-    @Synchronized
     private fun next() {
         if (!isCanContinueGame()) {
             val blackNumber = "黒 ${cellList.flatten().filter { it.stone == Stone.BLACK }.size}"
@@ -80,13 +79,13 @@ class BoardViewModel() : ViewModel() {
             nowTurn = Turn.WHITE
             Handler(Looper.getMainLooper()).postDelayed({
                 next()
-            },1500)
+            }, 1500)
         } else if (nowTurn == Turn.WHITE && !isCanPlayWhite()) {
             _turnMessage.value = "白の置ける場所がありません　パスします"
             nowTurn = Turn.BLACK
             Handler(Looper.getMainLooper()).postDelayed({
                 next()
-            },1500)
+            }, 1500)
         } else {
             requestPutStone()
         }
@@ -105,6 +104,7 @@ class BoardViewModel() : ViewModel() {
     }
 
     fun onClickCell(vertical: Int, horizontal: Int) {
+        if (isPlayerTurn && !clickable) return
         val color = when (nowTurn) {
             Turn.BLACK -> Stone.BLACK
             else -> Stone.WHITE
