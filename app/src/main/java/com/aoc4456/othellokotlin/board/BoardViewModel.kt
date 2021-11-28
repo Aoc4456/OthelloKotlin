@@ -35,6 +35,15 @@ class BoardViewModel() : ViewModel() {
     /** 入力を受け付けるか */
     private var clickable = false
 
+    /** 黒のターンで置く場所があるか */
+    private fun isCanPlayBlack(): Boolean = FlipOverUtils.getAllCellsCanPut(cellList, Turn.BLACK).isNotEmpty()
+
+    /** 白のターンで置く場所があるか */
+    private fun isCanPlayWhite(): Boolean = FlipOverUtils.getAllCellsCanPut(cellList, Turn.WHITE).isNotEmpty()
+
+    /** ゲームを続けられるか */
+    private fun isCanContinueGame() : Boolean = isCanPlayBlack() || isCanPlayWhite()
+
     /** 先行/後攻を決定 */
     fun decideTheOrder(isBlack: Boolean) {
         playerColor = when (isBlack) {
@@ -54,12 +63,28 @@ class BoardViewModel() : ViewModel() {
 
     private fun next() {
         // ゲーム自体が続けられるか
-        // false -> ゲーム自体を終了
+        if(!isCanContinueGame()){
+            Timber.d("置ける場所がなくなったので、ゲームを終了します")
+            Timber.d("黒 : ${cellList.flatten().filter { it.stone == Stone.BLACK }.size}")
+            Timber.d("白 : ${cellList.flatten().filter { it.stone == Stone.WHITE }.size}")
 
+            return
+        }
 
         // このターンのプレイヤーがプレイできるか
-        // false -> nowTurn を変更して続行
+        if(nowTurn == Turn.BLACK && !isCanPlayBlack()){
+            Timber.d("黒の置ける場所がありません　パスします")
+            nowTurn = Turn.WHITE
+            next()
+            return
+        }
 
+        if(nowTurn == Turn.WHITE && !isCanPlayWhite()){
+            Timber.d("白の置ける場所がありません　パスします")
+            nowTurn = Turn.BLACK
+            next()
+            return
+        }
 
         requestPutStone()
     }
@@ -114,7 +139,7 @@ class BoardViewModel() : ViewModel() {
                     else -> Turn.BLACK
                 }
                 next()
-            }, 1000)
+            }, 750)
         }
     }
 
@@ -140,7 +165,7 @@ class BoardViewModel() : ViewModel() {
             val position = ai.getNextPosition(cellList, nowTurn)
             Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
             onClickCell(position.first, position.second)
-        }, 1750)
+        }, 1500)
     }
 }
 
