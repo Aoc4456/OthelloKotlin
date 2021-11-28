@@ -28,6 +28,10 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
             it.adapter = cellAdapter
         }
 
+        viewModel.turnMessage.observe(this){
+            binding.message.text = it
+        }
+
         viewModel.updateBoard.observe(this){
             updateBoard()
         }
