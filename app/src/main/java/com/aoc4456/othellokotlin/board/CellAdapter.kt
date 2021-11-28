@@ -21,9 +21,7 @@ class CellAdapter(private val viewModel: BoardViewModel) :
         cellView.setAppearanceCell(cell)
 
         cellView.setOnClickListener {
-            if (cell.highlight) {
-                viewModel.onClickCell(cell.vertical, cell.horizontal)
-            }
+            viewModel.onClickCell(cell.vertical, cell.horizontal)
         }
     }
 

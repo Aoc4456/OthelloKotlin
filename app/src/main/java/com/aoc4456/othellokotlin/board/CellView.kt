@@ -54,8 +54,5 @@ class CellView : ConstraintLayout {
             else -> {
             }
         }
-        if (cell.highlight) {
-            cellBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.teal_200))
-        }
     }
 }

@@ -96,18 +96,20 @@ class BoardViewModel() : ViewModel() {
             Timber.d("そこには置けません $cell")
             return
         } else {
-            resetHighLightCells()
             cellList[vertical][horizontal] = cell
-            flipOverList.forEach {
-                cellList[it.vertical][it.horizontal] = Cell(it.vertical, it.horizontal, color)
-            }
             _updateBoard.value = true
 
-            nowTurn = when (nowTurn) {
-                Turn.BLACK -> Turn.WHITE
-                else -> Turn.BLACK
-            }
-            next()
+            Handler(Looper.getMainLooper()).postDelayed({
+                flipOverList.forEach {
+                    cellList[it.vertical][it.horizontal] = Cell(it.vertical, it.horizontal, color)
+                }
+                _updateBoard.value = true
+                nowTurn = when (nowTurn) {
+                    Turn.BLACK -> Turn.WHITE
+                    else -> Turn.BLACK
+                }
+                next()
+            }, 1000)
         }
     }
 
@@ -133,20 +135,9 @@ class BoardViewModel() : ViewModel() {
         val canPutCells = FlipOverUtils.getAllCellsCanPut(cellList, nowTurn)
         canPutCells.forEach {
             cellList[it.vertical][it.horizontal] =
-                Cell(it.vertical, it.horizontal, Stone.NONE, true)
+                Cell(it.vertical, it.horizontal, Stone.NONE)
         }
         _updateBoard.value = true
-    }
-
-    private fun resetHighLightCells() {
-        cellList.forEach { list ->
-            list.forEach {
-                if (it.highlight) {
-                    cellList[it.vertical][it.horizontal] =
-                        Cell(it.vertical, it.horizontal, it.stone, false)
-                }
-            }
-        }
     }
 
     /** CPUに石を置かせる */
@@ -155,7 +146,7 @@ class BoardViewModel() : ViewModel() {
             val position = ai.getNextPosition(cellList, nowTurn)
             Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
             onClickCell(position.first, position.second)
-        }, 100)
+        }, 1000)
     }
 }
 
