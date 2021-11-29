@@ -1,30 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainMenuActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnEasy"
-        android:layout_width="200dp"
-        android:layout_height="80dp"
-        android:text="@string/cpu_easy"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+    <data>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnHuman"
-        android:layout_width="200dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="50dp"
-        android:text="@string/vs_human"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnEasy" />
+    </data>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainMenuActivity">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnWeak"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:text="@string/cpu_weak"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNormal"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/cpu_normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnWeak" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStrong"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/cpu_strong"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnNormal" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHuman"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/vs_human"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnStrong" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

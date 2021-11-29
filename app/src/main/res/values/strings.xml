@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">OthelloKotlin</string>
-    <string name="cpu_easy">CPU : よわい</string>
+    <string name="cpu_weak">CPU : よわい</string>
+    <string name="cpu_normal">CPU : ふつう</string>
+    <string name="cpu_strong">CPU : つよい</string>
     <string name="vs_human">手動モード</string>
 
     <string-array name="black_or_white">

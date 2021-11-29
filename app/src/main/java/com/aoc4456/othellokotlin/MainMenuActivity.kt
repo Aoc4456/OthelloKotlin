@@ -2,34 +2,32 @@ package com.aoc4456.othellokotlin
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.aoc4456.othellokotlin.board.BoardActivity
+import com.aoc4456.othellokotlin.databinding.ActivityMainBinding
 import com.aoc4456.othellokotlin.model.Difficulty
 import com.aoc4456.othellokotlin.model.KEY_INTENT_DIFFICULTY
 
 class MainMenuActivity : AppCompatActivity() {
 
-    private lateinit var btnEasy : Button
-    private lateinit var btnHuman : Button
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnEasy = findViewById(R.id.btnEasy)
-        btnEasy.setOnClickListener {
-            val intent = Intent(this, BoardActivity::class.java)
-            intent.putExtra(KEY_INTENT_DIFFICULTY,Difficulty.WEAK)
-            startActivity(intent)
-        }
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        btnHuman = findViewById(R.id.btnHuman)
-        btnHuman.setOnClickListener {
-            val intent = Intent(this, BoardActivity::class.java)
-            intent.putExtra(KEY_INTENT_DIFFICULTY,Difficulty.HUMAN)
-            startActivity(intent)
-        }
+        binding.btnWeak.setOnClickListener { goToBoardActivity(Difficulty.WEAK) }
+        binding.btnNormal.setOnClickListener { goToBoardActivity(Difficulty.NORMAL) }
+        binding.btnStrong.setOnClickListener { goToBoardActivity(Difficulty.STRONG) }
+        binding.btnHuman.setOnClickListener { goToBoardActivity(Difficulty.HUMAN) }
+    }
+
+    private fun goToBoardActivity(difficulty: Difficulty) {
+        val intent = Intent(this, BoardActivity::class.java)
+        intent.putExtra(KEY_INTENT_DIFFICULTY, difficulty)
+        startActivity(intent)
     }
 }

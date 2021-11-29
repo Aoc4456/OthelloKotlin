@@ -22,10 +22,11 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_board)
 
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_board)
+
         difficulty = intent.extras!!.get(KEY_INTENT_DIFFICULTY) as Difficulty
         viewModel.setDifficulty(difficulty)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_board)
         cellAdapter = CellAdapter(viewModel)
 
         binding.recyclerView.let {
