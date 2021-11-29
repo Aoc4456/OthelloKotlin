@@ -8,16 +8,22 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.aoc4456.othellokotlin.R
 import com.aoc4456.othellokotlin.databinding.ActivityBoardBinding
+import com.aoc4456.othellokotlin.model.Difficulty
+import com.aoc4456.othellokotlin.model.KEY_INTENT_DIFFICULTY
 
 class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
 
     private val viewModel: BoardViewModel by viewModels()
     private lateinit var binding: ActivityBoardBinding
     private lateinit var cellAdapter: CellAdapter
+    private lateinit var difficulty: Difficulty
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_board)
+
+        difficulty = intent.extras!!.get(KEY_INTENT_DIFFICULTY) as Difficulty
+        viewModel.setDifficulty(difficulty)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_board)
         cellAdapter = CellAdapter(viewModel)
@@ -43,7 +49,12 @@ class BoardActivity : AppCompatActivity(), BlackOrWhiteDialogListener {
             updateBoard()
         }
 
-        BlackOrWhiteDialog().show(supportFragmentManager, "BlackOrWhiteDialogFragment")
+        if(difficulty == Difficulty.HUMAN){
+            binding.recyclerView.visibility = View.VISIBLE
+            viewModel.gameStart()
+        }else{
+            BlackOrWhiteDialog().show(supportFragmentManager, "BlackOrWhiteDialogFragment")
+        }
     }
 
     override fun onClickButtonInDialog(isBlack: Boolean) {

@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.aoc4456.othellokotlin.ai.AI
+import com.aoc4456.othellokotlin.ai.getAIFromDifficulty
 import com.aoc4456.othellokotlin.model.Cell
 import com.aoc4456.othellokotlin.model.Difficulty
 import com.aoc4456.othellokotlin.model.Stone
@@ -25,14 +26,14 @@ class BoardViewModel() : ViewModel() {
     private var playerColor = Turn.BLACK
 
     /** 今プレイヤーの番かどうか */
-    private val isPlayerTurn: Boolean get() = nowTurn == playerColor
+    private val isPlayerTurn: Boolean get() = (nowTurn == playerColor || cpu.difficulty == Difficulty.HUMAN)
 
     /** 盤を更新したいとき */
     private val _updateBoard = PublishLiveData<Boolean>()
     val updateBoard: PublishLiveData<Boolean> = _updateBoard
 
     /** CPUのAI */
-    private var ai = AI(Difficulty.WEAK)
+    private lateinit var cpu : AI
 
     /** 入力を受け付けるか */
     private var clickable = false
@@ -65,8 +66,13 @@ class BoardViewModel() : ViewModel() {
         gameStart()
     }
 
+    /** 難易度をセット */
+    fun setDifficulty(difficulty: Difficulty) {
+        cpu = getAIFromDifficulty(difficulty)
+    }
+
     /** ゲーム開始 */
-    private fun gameStart() {
+    fun gameStart() {
         initializeBoard()
         _updateBoard.value = true
 
@@ -157,7 +163,7 @@ class BoardViewModel() : ViewModel() {
     private fun cpuPutStone() {
         _isProgressVisible.value = true
         Handler(Looper.getMainLooper()).postDelayed({
-            val position = ai.getNextPosition(cellList, nowTurn)
+            val position = cpu.getNextPosition(cellList, nowTurn)
             Timber.d("CPUが置く場所を決めました : ${position.first} / ${position.second}")
             _isProgressVisible.value = false
             onClickCell(position.first, position.second)
